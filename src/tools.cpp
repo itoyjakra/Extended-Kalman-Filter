@@ -13,7 +13,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
 
   VectorXd rmse(4);
-	rmse << 0,0,0,0;
+  rmse << 0,0,0,0;
   VectorXd c;
 
 	if (estimations.size() != ground_truth.size())
@@ -43,8 +43,43 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 }
 
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
-  /**
-  TODO:
-    * Calculate a Jacobian here.
-  */
+
+  const float small = 1.0e-6;
+  MatrixXd Hj(3,4);
+
+	float px = x_state(0);
+	float py = x_state(1);
+	float vx = x_state(2);
+	float vy = x_state(3);
+
+	float pmag = px*px + py*py;
+  float pmag_root = pow(pmag, 0.5);
+  float pmag_root3 = pmag * pmag_root;
+
+	if (fabs(pmag) < small)
+  {
+    std::cout << "" << '\n';
+    throw "division by zero encountered";
+    return Hj;
+  }
+  else
+  {
+    Hj << px/pmag_root, py/pmag_root, 0, 0,
+          -py/pmag, px/pmag, 0, 0,
+          py*(vx*py - vy*px)/pmag_root3, px*(vy*px - vx*py)/pmag_root3, px/pmag_root, py/pmag_root;
+
+  	return Hj;
+  }
+}
+
+VectorXd Tools::PolarToCart(const VectorXd& polar)
+{
+  VectorXd cartesian(4);
+  float rho = polar(0);
+  float phi = polar(1);
+  float rho_dot = polar(2);
+
+  cartesian << rho * cos(phi), rho * sin(phi), rho_dot * cos(phi), rho_dot * sin(phi);
+
+  return cartesian;
 }
