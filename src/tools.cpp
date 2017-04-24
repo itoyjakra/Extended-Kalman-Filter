@@ -10,13 +10,13 @@ Tools::Tools() {}
 Tools::~Tools() {}
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
-                              const vector<VectorXd> &ground_truth) {
-
+                              const vector<VectorXd> &ground_truth) 
+{
   VectorXd rmse(4);
   rmse << 0,0,0,0;
   VectorXd c;
 
-	if (estimations.size() != ground_truth.size())
+  if (estimations.size() != ground_truth.size())
   {
     throw "lengths of vectors are different for RMSE calculations";
   }
@@ -39,7 +39,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   rmse = rmse / estimations.size();
   rmse = sqrt(rmse.array());
 
-	return rmse;
+  return rmse;
 }
 
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
@@ -47,21 +47,18 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   const float small = 1.0e-6;
   MatrixXd Hj(3,4);
 
-	float px = x_state(0);
-	float py = x_state(1);
-	float vx = x_state(2);
-	float vy = x_state(3);
+  float px = x_state(0);
+  float py = x_state(1);
+  float vx = x_state(2);
+  float vy = x_state(3);
 
-	float pmag = px*px + py*py;
+  float pmag = px*px + py*py;
   float pmag_root = pow(pmag, 0.5);
   float pmag_root3 = pmag * pmag_root;
 
-  std::cout << "pmag in CalculateJacobian:" << '\n';
-  std::cout << pmag << '\n';
-
-	if (fabs(pmag) < small)
+  if (fabs(pmag) < small)
   {
-    throw "position vector is too small, assigning all zeros to Jacobian";
+    throw "position vector is too small";
   }
   else
   {
@@ -87,27 +84,22 @@ VectorXd Tools::PolarToCart(const VectorXd& polar)
 
 VectorXd Tools::CartToPolar(const VectorXd& cart)
 {
-  std::cout << "in CartToPolar at the begining" << '\n';
+  float small = 1.0e-6;
   float px = cart(0);
   float py = cart(1);
   float vx = cart(2);
   float vy = cart(3);
-  std::cout << "px, py, vx, vy, pmag" << '\n';
   float rho = sqrt(px*px + py*py);
-  std::cout << px << '\t' << py << '\t' << vx << '\t' << vy << '\t' << rho << '\n';
-  VectorXd polar(3);
-
   float phi = atan2(py, px);
   float rho_dot;
-  if (rho < 1.0e-6)
+  VectorXd polar(3);
+
+  if (rho < small)
     rho_dot = 0;
   else
     rho_dot = (px * vx + py * vy)/rho;
 
-  std::cout << "in CartToPolar" << '\n';
   polar << rho, phi, rho_dot;
 
-  std::cout << "polar" << '\n';
-  std::cout << polar << '\n';
   return polar;
 }
