@@ -67,13 +67,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
-    ekf_.x_ << 1, 1, 1, 1;
+    ekf_.x_ << 0, 0, 0, 0;
     ekf_.P_ = MatrixXd(4, 4);
     ekf_.P_ << 1, 0, 0, 0,
                0, 1, 0, 0,
                0, 0, 1, 0,
                0, 0, 0, 1;
 
+    std::cout << "measurement_pack" << '\n';
+    std::cout << measurement_pack.sensor_type_ << '\n' << measurement_pack.raw_measurements_ << '\n';
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR)
     {
       /**
@@ -86,7 +88,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
       /**
       Initialize state.
       */
-      ekf_.x_ = measurement_pack.raw_measurements_;
+      VectorXd pos = measurement_pack.raw_measurements_;
+      ekf_.x_(0) = pos(0);
+      ekf_.x_(1) = pos(1);
+      //ekf_.x_ = measurement_pack.raw_measurements_;
       //ekf_.Init(x, P, F, H, R, Q);
     }
 

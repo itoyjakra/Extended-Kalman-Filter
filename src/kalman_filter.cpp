@@ -57,11 +57,12 @@ void KalmanFilter::Update(const VectorXd &z) {
   std::cout << "K" << '\n';
   std::cout << K << '\n';
 
-	//new estimate
-	x_ = x_ + (K * y);
+  //new estimate
+  x_ = x_ + (K * y);
 	long x_size = x_.size();
 	MatrixXd I = MatrixXd::Identity(x_size, x_size);
 	P_ = (I - K * H_) * P_;
+
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z, MatrixXd &Hj) {
@@ -84,6 +85,19 @@ void KalmanFilter::UpdateEKF(const VectorXd &z, MatrixXd &Hj) {
 	MatrixXd Si = S.inverse();
 	MatrixXd PHt = P_ * Ht;
 	MatrixXd K = PHt * Si;
+
+  VectorXd d = K*y;
+  //std::cout << "_____________" << '\t' <<d << '\n';
+  if (fabs(d(1)) > 6)
+  {
+    std::cout << "S" << '\n';
+    std::cout << S << '\n';
+    std::cout << "Si" << '\n';
+    std::cout << Si << '\n';
+    std::cout << "K" << '\n';
+    std::cout << K << '\n';
+    std::cout << "_____________" << x_ << d << "___________" << '\n';
+  }
 
 	//new estimate
 	x_ = x_ + (K * y);

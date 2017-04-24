@@ -91,16 +91,15 @@ VectorXd Tools::CartToPolar(const VectorXd& cart)
   float py = cart(1);
   float vx = cart(2);
   float vy = cart(3);
-  std::cout << "px, py, vx, vy" << '\n';
-  std::cout << px << '\t' << py << 't' << vx << '\t' << vy << '\n';
+  std::cout << "px, py, vx, vy, pmag" << '\n';
   float pmag = sqrt(px*px + py*py);
+  std::cout << px << '\t' << py << '\t' << vx << '\t' << vy << '\t' << pmag << '\n';
   VectorXd polar(3);
-  
+
 
   std::cout << "in CartToPolar" << '\n';
-
   polar << pmag,
-           atan(py/px),
+           atan2(py, px),
            (px * vx + py * vy)/pmag;
   std::cout << "polar" << '\n';
   std::cout << polar << '\n';
