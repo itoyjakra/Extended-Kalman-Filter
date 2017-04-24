@@ -56,11 +56,12 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float pmag_root = pow(pmag, 0.5);
   float pmag_root3 = pmag * pmag_root;
 
+  std::cout << "pmag in CalculateJacobian:" << '\n';
+  std::cout << pmag << '\n';
+
 	if (fabs(pmag) < small)
   {
-    std::cout << "" << '\n';
-    throw "division by zero encountered";
-    return Hj;
+    throw "position vector is too small, assigning all zeros to Jacobian";
   }
   else
   {
@@ -92,15 +93,20 @@ VectorXd Tools::CartToPolar(const VectorXd& cart)
   float vx = cart(2);
   float vy = cart(3);
   std::cout << "px, py, vx, vy, pmag" << '\n';
-  float pmag = sqrt(px*px + py*py);
-  std::cout << px << '\t' << py << '\t' << vx << '\t' << vy << '\t' << pmag << '\n';
+  float rho = sqrt(px*px + py*py);
+  std::cout << px << '\t' << py << '\t' << vx << '\t' << vy << '\t' << rho << '\n';
   VectorXd polar(3);
 
+  float phi = atan2(py, px);
+  float rho_dot;
+  if (rho < 1.0e-6)
+    rho_dot = 0;
+  else
+    rho_dot = (px * vx + py * vy)/rho;
 
   std::cout << "in CartToPolar" << '\n';
-  polar << pmag,
-           atan2(py, px),
-           (px * vx + py * vy)/pmag;
+  polar << rho, phi, rho_dot;
+
   std::cout << "polar" << '\n';
   std::cout << polar << '\n';
   return polar;

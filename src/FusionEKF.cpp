@@ -158,9 +158,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
   {
     // Radar updates
     std::cout << "---------begin radar update------------" << '\n';
-    Hj_ = tools.CalculateJacobian(ekf_.x_);
+    try
+    {
+      Hj_ = tools.CalculateJacobian(ekf_.x_);
+    }
+    catch (const char* msg)
+    {
+      cout << msg << endl;
+      Hj_ << 0, 0, 0, 0,
+             0, 0, 0, 0,
+             0, 0, 0, 0;
+    }
+    //Hj_ = tools.CalculateJacobian(ekf_.x_);
+    std::cout << "Jacobian is here" << '\n';
     cout << "Hj = " << endl;
     cout << Hj_ << endl;
+    
     ekf_.R_ = R_radar_;
     ekf_.UpdateEKF(measurement_pack.raw_measurements_, Hj_);
     std::cout << "---------end radar update------------" << '\n';
