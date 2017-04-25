@@ -30,10 +30,13 @@ FusionEKF::FusionEKF()
 
   ekf_.F_ = MatrixXd(4, 4);
   ekf_.F_ << 1, 0, 1, 0,
-			  0, 1, 0, 1,
-			  0, 0, 1, 0,
-			  0, 0, 0, 1;
+             0, 1, 0, 1,
+             0, 0, 1, 0,
+             0, 0, 0, 1;
 
+  ekf_.H_ = MatrixXd(2, 4);
+  ekf_.H_ << 1, 0, 0, 0,
+			 0, 1, 0, 0;
 }
 
 FusionEKF::~FusionEKF() {}
@@ -85,9 +88,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
   MatrixXd G = MatrixXd(4, 2);
   float dt2 = dt*dt;
   G << dt2/2, 0,
- 			 0, dt2/2,
- 			 dt, 0,
- 			 0, dt;
+           0, dt2/2,
+          dt, 0,
+           0, dt;
 
   MatrixXd Gt = G.transpose();
   MatrixXd Q_nu = MatrixXd(2, 2);
@@ -96,7 +99,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
   float noise_ay = 9.0;
 
   Q_nu << noise_ax, 0,
- 				  0, noise_ay;
+ 		  0, noise_ay;
   ekf_.Q_ = G * Q_nu * Gt;
 
   ekf_.Predict();
@@ -126,9 +129,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
   else 
   {
     // Laser updates
-    ekf_.H_ = MatrixXd(2, 4);
-	ekf_.H_ << 1, 0, 0, 0,
-			   0, 1, 0, 0;
     ekf_.R_ = R_laser_;
     ekf_.Update(measurement_pack.raw_measurements_);
   }

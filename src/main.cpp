@@ -144,11 +144,7 @@ int main(int argc, char* argv[])
   size_t N = measurement_pack_list.size();
   for (size_t k = 0; k < N; ++k)
   {
-    // start filtering from the second frame (the speed is unknown in the first
-    // frame)
     fusionEKF.ProcessMeasurement(measurement_pack_list[k]);
-    std::cout << "after first call" << '\n';
-    std::cout << fusionEKF.ekf_.x_ << '\n';
 
     // output the estimation
     out_file_ << fusionEKF.ekf_.x_(0) << "\t";
@@ -156,7 +152,6 @@ int main(int argc, char* argv[])
     out_file_ << fusionEKF.ekf_.x_(2) << "\t";
     out_file_ << fusionEKF.ekf_.x_(3) << "\t";
 
-    std::cout << "after output" << '\n';
     // output the measurements
     if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::LASER)
     {

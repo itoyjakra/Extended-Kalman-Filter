@@ -48,6 +48,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z, MatrixXd &Hj)
   VectorXd z_pred = tools.CartToPolar(x_);
   VectorXd y = z - z_pred;
 
+  // angle phi must be within (-pi, +pi)
   while (y(1) > M_PI)
     y(1) -= 2 * M_PI;
   while (y(1) < -M_PI)
